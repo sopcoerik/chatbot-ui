@@ -8,6 +8,7 @@ import {
 } from './components/OpenCloseButton';
 
 import Search from '../Search';
+import { Switch } from '../ui/switch';
 
 interface Props<T> {
   isOpen: boolean;
@@ -18,11 +19,13 @@ interface Props<T> {
   folderComponent: ReactNode;
   footerComponent?: ReactNode;
   searchTerm: string;
+  includeMessages: boolean;
   handleSearchTerm: (searchTerm: string) => void;
   toggleOpen: () => void;
   handleCreateItem: () => void;
   handleCreateFolder: () => void;
   handleDrop: (e: any) => void;
+  doIncludeMessages: (doInclude: boolean) => void;
 }
 
 const Sidebar = <T,>({
@@ -39,6 +42,8 @@ const Sidebar = <T,>({
   handleCreateItem,
   handleCreateFolder,
   handleDrop,
+  doIncludeMessages,
+  includeMessages,
 }: Props<T>) => {
   const { t } = useTranslation('promptbar');
 
@@ -59,7 +64,7 @@ const Sidebar = <T,>({
       <div
         className={`fixed top-0 ${side}-0 z-40 flex h-full w-[260px] flex-none flex-col space-y-2 bg-[#202123] p-2 text-[14px] transition-all sm:relative sm:top-0`}
       >
-        <div className="flex items-center">
+        <div className="flex items-center mb-2">
           <button
             className="text-sidebar flex w-[190px] flex-shrink-0 cursor-pointer select-none items-center gap-3 rounded-md border border-white/20 p-3 text-white transition-colors duration-200 hover:bg-gray-500/10"
             onClick={() => {
@@ -83,6 +88,13 @@ const Sidebar = <T,>({
           searchTerm={searchTerm}
           onSearch={handleSearchTerm}
         />
+        <div className="flex items-center">
+          <label htmlFor="include-messages">Include messages:&nbsp;</label>
+          <Switch
+            onClick={() => doIncludeMessages(includeMessages ? false : true)}
+            id="include-messages"
+          />
+        </div>
 
         <div className="flex-grow overflow-auto">
           {items?.length > 0 && (

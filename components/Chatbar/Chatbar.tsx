@@ -42,7 +42,7 @@ export const Chatbar = () => {
   } = useContext(HomeContext);
 
   const {
-    state: { searchTerm, filteredConversations },
+    state: { searchTerm, filteredConversations, includeMessages },
     dispatch: chatDispatch,
   } = chatBarContextValue;
 
@@ -54,6 +54,13 @@ export const Chatbar = () => {
     },
     [homeDispatch],
   );
+
+  const doIncludeMessages = (doInclude: boolean) => {
+    chatDispatch({
+      field: 'includeMessages',
+      value: doInclude,
+    });
+  };
 
   const handlePluginKeyChange = (pluginKey: PluginKey) => {
     if (pluginKeys.some((key) => key.pluginId === pluginKey.pluginId)) {
@@ -191,11 +198,17 @@ export const Chatbar = () => {
       chatDispatch({
         field: 'filteredConversations',
         value: conversations.filter((conversation) => {
-          const searchable =
-            conversation.name.toLocaleLowerCase() +
-            ' ' +
-            conversation.messages.map((message) => message.content).join(' ');
-          return searchable.toLowerCase().includes(searchTerm.toLowerCase());
+          if (!includeMessages) {
+            return conversation.name
+              .toLocaleLowerCase()
+              .includes(searchTerm.toLowerCase());
+          } else {
+            const searchable =
+              conversation.name.toLocaleLowerCase() +
+              ' ' +
+              conversation.messages.map((message) => message.content).join(' ');
+            return searchable.toLowerCase().includes(searchTerm.toLowerCase());
+          }
         }),
       });
     } else {
@@ -204,7 +217,7 @@ export const Chatbar = () => {
         value: conversations,
       });
     }
-  }, [searchTerm, conversations]);
+  }, [searchTerm, conversations, includeMessages]);
 
   return (
     <ChatbarContext.Provider
@@ -235,6 +248,8 @@ export const Chatbar = () => {
         handleCreateFolder={() => handleCreateFolder(t('New folder'), 'chat')}
         handleDrop={handleDrop}
         footerComponent={<ChatbarSettings />}
+        doIncludeMessages={doIncludeMessages}
+        includeMessages={includeMessages}
       />
     </ChatbarContext.Provider>
   );

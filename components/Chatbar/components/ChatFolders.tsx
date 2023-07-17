@@ -32,7 +32,13 @@ export const ChatFolders = ({ searchTerm }: Props) => {
     return (
       conversations &&
       conversations
-        .filter((conversation) => conversation.folderId)
+        .filter(
+          (conversation) =>
+            conversation.folderId &&
+            conversation.messages.some((message) =>
+              message.content.includes(searchTerm),
+            ),
+        )
         .map((conversation, index) => {
           if (conversation.folderId === currentFolder.id) {
             return (
